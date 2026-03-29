@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banco de Preguntas</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-2: #eef3f9;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #165586;
+      --primary-2: #0f3d61;
+      --success: #d1fae5;
+      --success-border: #10b981;
+      --warning: #fff7ed;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #edf4fb 0%, #f8fbff 100%);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      width: min(1200px, calc(100% - 24px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 28px 0 18px;
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, var(--primary) 0%, #1d6ea9 100%);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-title {
+      font-size: clamp(1.6rem, 3vw, 2.5rem);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .hero-text {
+      color: rgba(255,255,255,0.92);
+      font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+      max-width: 850px;
+    }
+
+    .top-tools {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1.4fr 0.8fr;
+      gap: 14px;
+    }
+
+    .search-box,
+    .stats-box {
+      background: rgba(255,255,255,0.14);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+    }
+
+    .search-box label,
+    .stats-box h3 {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .search-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 1rem;
+      background: white;
+      color: var(--text);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.95);
+      color: var(--text);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
+    .section-nav {
+      padding: 18px 0 10px;
+    }
+
+    .section-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .nav-card {
+      display: block;
+      text-decoration: none;
+      background: var(--surface);
+      color: var(--text);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 2px solid transparent;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+
+    .nav-card small {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-card h2 {
+      font-size: clamp(1.2rem, 2vw, 1.55rem);
+      margin-bottom: 6px;
+      color: var(--primary);
+    }
+
+    .nav-card p {
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    main {
+      padding: 12px 0 40px;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: clamp(1.35rem, 2vw, 1.8rem);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .section-badge {
+      background: var(--surface-2);
+      color: var(--primary);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .questions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .question-card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 2px solid transparent;
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+
+    .question-card:hover {
+      transform: translateY(-3px);
+      border-color: #dbeafe;
+    }
+
+    .question-card.done {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+
+    .question-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      flex-wrap: wrap;
+    }
+
+    .question-code {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #e8f1fb;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .question-card.done .question-code {
+      background: rgba(255,255,255,0.7);
+    }
+
+    .done-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .done-toggle input {
+      width: 20px;
+      height: 20px;
+      accent-color: #16a34a;
+      cursor: pointer;
+    }
+
+    .question-body {
+      padding: 16px 18px 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      background: #f9fbfd;
+      border: 1px solid #e5e7eb;
+      border-radius: var(--radius-lg);
+      padding: 14px;
+    }
+
+    .question-card.done .field {
+      background: rgba(255,255,255,0.55);
+    }
+
+    .field-title {
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .field-content {
+      font-size: 1rem;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .empty-message {
+      background: var(--warning);
+      color: #9a3412;
+      border: 1px solid #fdba74;
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      margin-top: 12px;
+      display: none;
+      font-weight: 700;
+    }
+
+    .footer-space {
+      height: 20px;
+    }
+
+    @media (max-width: 980px) {
+      .top-tools {
+        grid-template-columns: 1fr;
+      }
+
+      .questions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .section-nav-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card {
+        padding: 18px;
+      }
+
+      .question-top,
+      .section-header {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <div class="hero-card">
+        <h1 class="hero-title">Banco de preguntas para organizadores</h1>
+        <p class="hero-text">
+          Busca rápido por código, revisa cada pregunta y marca las que ya se realizaron. La página está organizada por secciones de 200, 500 y 1000 puntos.
+        </p>
+
+        <div class="top-tools">
+          <div class="search-box">
+            <label for="searchInput">Buscar por código</label>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Ejemplo: P200-01"
+            />
+          </div>
+
+          <div class="stats-box">
+            <h3>Resumen general</h3>
+            <div class="stats-grid">
+              <div class="stat">
+                <strong id="totalQuestions">0</strong>
+                <span>Total</span>
+              </div>
+              <div class="stat">
+                <strong id="doneQuestions">0</strong>
+                <span>Realizadas</span>
+              </div>
+              <div class="stat">
+                <strong id="pendingQuestions">0</strong>
+                <span>Pendientes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="section-nav">
+    <div class="container">
+      <div class="section-nav-grid">
+        <a class="nav-card" href="#sec-200">
+          <small>SECCIÓN 1</small>
+          <h2>Preguntas de 200</h2>
+          <p>Acceso rápido a las preguntas de menor puntaje.</p>
+        </a>
+        <a class="nav-card" href="#sec-500">
+          <small>SECCIÓN 2</small>
+          <h2>Preguntas de 500</h2>
+          <p>Ubica rápido las preguntas intermedias.</p>
+        </a>
+        <a class="nav-card" href="#sec-1000">
+          <small>SECCIÓN 3</small>
+          <h2>Preguntas de 1000</h2>
+          <p>Encuentra las preguntas de mayor valor.</p>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+      <div id="emptyMessage" class="empty-message">
+        No se encontraron preguntas con ese código.
+      </div>
+
+      <section class="section" id="sec-200">
+        <div class="section-header">
+          <h2 class="section-title">Preguntas de 200</h2>
+          <span class="section-badge" id="count200">0 preguntas</span>
+        </div>
+        <div class="questions-grid" id="grid200"></div>
+      </section>
+
+      <section class="section" id="sec-500">
+        <div class="section-header">
+          <h2 class="section-title">Preguntas de 500</h2>
+          <span class="section-badge" id="count500">0 preguntas</span>
+        </div>
+        <div class="questions-grid" id="grid500"></div>
+      </section>
+
+      <section class="section" id="sec-1000">
+        <div class="section-header">
+          <h2 class="section-title">Preguntas de 1000</h2>
+          <span class="section-badge" id="count1000">0 preguntas</span>
+        </div>
+        <div class="questions-grid" id="grid1000"></div>
+      </section>
+
+      <div class="footer-space"></div>
+    </div>
+  </main>
+
+  <script>
+    const preguntas = {
+      200: [
+        {
+          codigo: 'P200-01',
+          pregunta: 'Escribe aquí la pregunta de 200 puntos.',
+          respuesta: 'Escribe aquí la respuesta correcta.',
+          pista: 'Escribe aquí la pista.'
+        },
+        {
+          codigo: 'P200-02',
+          pregunta: 'Otra pregunta de ejemplo para la sección de 200.',
+          respuesta: 'Respuesta de ejemplo.',
+          pista: 'Pista de ejemplo.'
+        }
+      ],
+      500: [
+        {
+          codigo: 'P500-01',
+          pregunta: 'Escribe aquí la pregunta de 500 puntos.',
+          respuesta: 'Escribe aquí la respuesta correcta.',
+          pista: 'Escribe aquí la pista.'
+        },
+        {
+          codigo: 'P500-02',
+          pregunta: 'Otra pregunta de ejemplo para la sección de 500.',
+          respuesta: 'Respuesta de ejemplo.',
+          pista: 'Pista de ejemplo.'
+        }
+      ],
+      1000: [
+        {
+          codigo: 'P1000-01',
+          pregunta: 'Escribe aquí la pregunta de 1000 puntos.',
+          respuesta: 'Escribe aquí la respuesta correcta.',
+          pista: 'Escribe aquí la pista.'
+        },
+        {
+          codigo: 'P1000-02',
+          pregunta: 'Otra pregunta de ejemplo para la sección de 1000.',
+          respuesta: 'Respuesta de ejemplo.',
+          pista: 'Pista de ejemplo.'
+        }
+      ]
+    };
+
+    const STORAGE_KEY = 'banco_preguntas_realizadas';
+    const savedStatus = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+    const grids = {
+      200: document.getElementById('grid200'),
+      500: document.getElementById('grid500'),
+      1000: document.getElementById('grid1000')
+    };
+
+    const counters = {
+      200: document.getElementById('count200'),
+      500: document.getElementById('count500'),
+      1000: document.getElementById('count1000')
+    };
+
+    const searchInput = document.getElementById('searchInput');
+    const emptyMessage = document.getElementById('emptyMessage');
+
+    function saveStatus() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedStatus));
+    }
+
+    function createQuestionCard(item) {
+      const article = document.createElement('article');
+      article.className = 'question-card';
+      article.dataset.codigo = item.codigo.toLowerCase();
+
+      if (savedStatus[item.codigo]) {
+        article.classList.add('done');
+      }
+
+      article.innerHTML = `
+        <div class="question-top">
+          <span class="question-code">${item.codigo}</span>
+          <label class="done-toggle">
+            <input type="checkbox" ${savedStatus[item.codigo] ? 'checked' : ''}>
+            <span>Pregunta realizada</span>
+          </label>
+        </div>
+        <div class="question-body">
+          <div class="field">
+            <div class="field-title">Pregunta</div>
+            <div class="field-content">${item.pregunta}</div>
+          </div>
+          <div class="field">
+            <div class="field-title">Respuesta</div>
+            <div class="field-content">${item.respuesta}</div>
+          </div>
+          <div class="field">
+            <div class="field-title">Pista</div>
+            <div class="field-content">${item.pista}</div>
+          </div>
+        </div>
+      `;
+
+      const checkbox = article.querySelector('input[type="checkbox"]');
+      checkbox.addEventListener('change', () => {
+        savedStatus[item.codigo] = checkbox.checked;
+        article.classList.toggle('done', checkbox.checked);
+        saveStatus();
+        updateStats();
+      });
+
+      return article;
+    }
+
+    function renderAll() {
+      Object.keys(grids).forEach((nivel) => {
+        grids[nivel].innerHTML = '';
+        preguntas[nivel].forEach((item) => {
+          grids[nivel].appendChild(createQuestionCard(item));
+        });
+        counters[nivel].textContent = `${preguntas[nivel].length} preguntas`;
+      });
+      updateStats();
+    }
+
+    function updateStats() {
+      const allQuestions = Object.values(preguntas).flat();
+      const total = allQuestions.length;
+      const done = allQuestions.filter((q) => savedStatus[q.codigo]).length;
+      const pending = total - done;
+
+      document.getElementById('totalQuestions').textContent = total;
+      document.getElementById('doneQuestions').textContent = done;
+      document.getElementById('pendingQuestions').textContent = pending;
+    }
+
+    function filterQuestions() {
+      const value = searchInput.value.trim().toLowerCase();
+      const cards = document.querySelectorAll('.question-card');
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const match = card.dataset.codigo.includes(value);
+        card.style.display = match ? 'block' : 'none';
+        if (match) visibleCount++;
+      });
+
+      emptyMessage.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    searchInput.addEventListener('input', filterQuestions);
+
+    renderAll();
+  </script>
+</body>
+</html>
